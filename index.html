@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gestion-Data</title>
+<style>
+:root{--bg:#eef2f1;--card:#fff;--ink:#14232b;--mute:#5d6f76;--line:#d3dcdb;--acc:#0f6b4f;--acc2:#e9f4f0;--err:#b3261e}
+@media (prefers-color-scheme:dark){:root{--bg:#10191d;--card:#18252a;--ink:#e8f0ee;--mute:#9bb0b0;--line:#2b3c41;--acc:#3fbf93;--acc2:#1b3a33;--err:#ff8a80}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:640px;margin:0 auto;padding:16px}
+h1{font-size:1.5rem;margin:8px 0 4px}
+p.sub{color:var(--mute);margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+label{display:block;font-size:.9rem;color:var(--mute);margin:10px 0 4px}
+input,select{width:100%;padding:11px;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+button{font:inherit;cursor:pointer;border-radius:8px;border:0;padding:12px 16px}
+.main{background:var(--acc);color:#fff;width:100%;margin-top:16px;font-weight:600}
+.link{background:none;color:var(--acc);padding:8px 0;text-decoration:underline}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:8px}
+.tabs button{background:var(--card);color:var(--ink);border:1px solid var(--line);white-space:nowrap}
+.tabs button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.row{border-top:1px solid var(--line);padding:10px 0;display:flex;justify-content:space-between;gap:12px}
+.row:first-child{border-top:0}
+.row small{display:block;color:var(--mute)}
+.del{background:none;color:var(--err);padding:4px 8px}
+.msg{margin-top:12px;min-height:1.2em;color:var(--mute)}
+.msg.err{color:var(--err)}
+.top{display:flex;justify-content:space-between;align-items:center}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<section id="auth">
+  <h1>Gestion-Data</h1>
+  <p class="sub">Saisissez et retrouvez les données de votre entreprise.</p>
+  <div class="card">
+    <label for="em">Adresse e-mail</label>
+    <input id="em" type="email" autocomplete="email">
+    <label for="pw">Mot de passe (8 caractères minimum)</label>
+    <input id="pw" type="password" autocomplete="current-password">
+    <button class="main" id="go">Se connecter</button>
+    <button class="link" id="sw" type="button">Pas de compte ? Créer un compte</button>
+    <div class="msg" id="am" role="status"></div>
+  </div>
+</section>
+
+<section id="app" class="hide">
+  <div class="top">
+    <h1>Gestion-Data</h1>
+    <button class="link" id="out" type="button">Se déconnecter</button>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div class="card">
+    <form id="form"></form>
+    <div class="msg" id="fm" role="status"></div>
+  </div>
+  <div class="card" id="list"></div>
+</section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const sb = supabase.createClient(
+  "https://fsedqwxplgrtvtvndoxw.supabase.co",
+  "sb_publishable_s7u3Ts6pdfn_M_X5tvZdqw_E9GO8XmM"
+);
+
+// [colonne, libellé, type, obligatoire]
+const T = {
+  entreprises:{n:"Entreprise",o:"cree_le",f:[["nom","Nom de l'entreprise","text",1],["secteur","Secteur d'activité"],["telephone","Téléphone","tel"],["email","E-mail","email"],["adresse","Adresse"],["ville","Ville"],["pays","Pays"]]},
+  clients:{n:"Clients",o:"cree_le",f:[["nom","Nom","text",1],["telephone","Téléphone","tel"],["email","E-mail","email"],["adresse","Adresse"],["ville","Ville"],["notes","Notes"]]},
+  produits:{n:"Produits",o:"cree_le",f:[["nom","Nom du produit","text",1],["categorie","Catégorie"],["prix_achat","Prix d'achat","number"],["prix_vente","Prix de vente","number"],["stock","Quantité en stock","number"]]},
+  ventes:{n:"Ventes",o:"date_vente",f:[["client_id","Client","sel:clients"],["produit_id","Produit","sel:produits"],["quantite","Quantité","number"],["montant","Montant","number"],["date_vente","Date","date"],["mode_paiement","Mode de paiement"],["statut_paiement","Statut","opt:Payé,Partiel,Impayé"]]},
+  depenses:{n:"Dépenses",o:"date_depense",f:[["libelle","Libellé","text",1],["categorie","Catégorie"],["montant","Montant","number"],["date_depense","Date","date"]]},
+  employes:{n:"Employés",o:"nom",f:[["nom","Nom","text",1],["poste","Poste"],["telephone","Téléphone","tel"],["salaire","Salaire","number"],["date_embauche","Date d'embauche","date"]]}
+};
+const $ = id => document.getElementById(id);
+let cur = "entreprises", signup = false;
+
+function el(tag, props, text){const e=document.createElement(tag);Object.assign(e,props||{});if(text!=null)e.textContent=text;return e}
+function say(id, t, err){const m=$(id);m.textContent=t;m.className="msg"+(err?" err":"")}
+
+// ----- Connexion -----
+$("sw").onclick = () => {
+  signup = !signup;
+  $("go").textContent = signup ? "Créer mon compte" : "Se connecter";
+  $("sw").textContent = signup ? "Déjà un compte ? Se connecter" : "Pas de compte ? Créer un compte";
+  say("am","");
+};
+$("go").onclick = async () => {
+  const email = $("em").value.trim(), password = $("pw").value;
+  if(!email || password.length < 8) return say("am","Entrez votre e-mail et un mot de passe de 8 caractères minimum.",1);
+  say("am","Un instant…");
+  const r = signup ? await sb.auth.signUp({email,password}) : await sb.auth.signInWithPassword({email,password});
+  if(r.error) return say("am", r.error.message, 1);
+  if(signup && !r.data.session) return say("am","Compte créé. Ouvrez le message reçu par e-mail pour le confirmer, puis connectez-vous.");
+  start();
+};
+$("out").onclick = async () => { await sb.auth.signOut(); show(false); };
+
+function show(on){ $("auth").classList.toggle("hide",on); $("app").classList.toggle("hide",!on); }
+
+async function start(){
+  const {data} = await sb.auth.getSession();
+  if(!data.session) return show(false);
+  show(true); tabs(); open(cur);
+}
+
+// ----- Onglets, formulaire, liste -----
+function tabs(){
+  const box=$("tabs"); box.replaceChildren();
+  for(const k in T){
+    const b=el("button",{type:"button",className:k===cur?"on":""},T[k].n);
+    b.onclick=()=>{cur=k;tabs();open(k)};
+    box.append(b);
+  }
+}
+
+async function options(table){
+  const {data} = await sb.from(table).select("id,nom").order("nom");
+  return data || [];
+}
+
+async function open(k){
+  const f=$("form"); f.replaceChildren(); say("fm","");
+  for(const [col,lab,type="text",req] of T[k].f){
+    const id="f_"+col;
+    f.append(el("label",{htmlFor:id},lab));
+    let inp;
+    if(type.startsWith("sel:")){
+      inp=el("select",{id}); inp.append(el("option",{value:""},"— Choisir —"));
+      for(const o of await options(type.slice(4))) inp.append(el("option",{value:o.id},o.nom));
+    } else if(type.startsWith("opt:")){
+      inp=el("select",{id}); inp.append(el("option",{value:""},"— Choisir —"));
+      for(const o of type.slice(4).split(",")) inp.append(el("option",{value:o},o));
+    } else {
+      inp=el("input",{id,type,required:!!req});
+      if(type==="number") inp.step="any";
+    }
+    inp.dataset.col=col; f.append(inp);
+  }
+  f.append(el("button",{className:"main",type:"submit"},"Enregistrer"));
+  f.onsubmit=async e=>{
+    e.preventDefault();
+    const row={};
+    f.querySelectorAll("[data-col]").forEach(i=>{ if(i.value!=="") row[i.dataset.col]=i.value; });
+    const {error}=await sb.from(k).insert(row);
+    if(error) return say("fm",error.message,1);
+    f.reset(); say("fm","Enregistré."); load(k);
+  };
+  load(k);
+}
+
+async function load(k){
+  const box=$("list"); box.replaceChildren(el("p",{className:"sub"},"Chargement…"));
+  const {data,error}=await sb.from(k).select("*").order(T[k].o,{ascending:k==="employes"}).limit(100);
+  box.replaceChildren();
+  if(error) return box.append(el("p",{className:"msg err"},error.message));
+  if(!data.length) return box.append(el("p",{className:"sub"},"Aucune entrée pour l'instant. Remplissez le formulaire ci-dessus."));
+  for(const r of data){
+    const row=el("div",{className:"row"}), info=el("div");
+    const main=r.nom||r.libelle||(r.montant!=null?r.montant+"":"Vente");
+    info.append(el("strong",{},main));
+    const det=T[k].f.filter(([c])=>c!=="nom"&&c!=="libelle"&&r[c]!=null&&r[c]!==""&&!c.endsWith("_id")).map(([c,l])=>l+" : "+r[c]).join(" · ");
+    if(det) info.append(el("small",{},det));
+    const d=el("button",{className:"del",type:"button"},"Supprimer");
+    d.onclick=async()=>{ if(!confirm("Supprimer cette entrée ?")) return; await sb.from(k).delete().eq("id",r.id); load(k); };
+    row.append(info,d); box.append(row);
+  }
+}
+
+start();
+</script>
+</body>
+</html>
