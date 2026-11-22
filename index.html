@@ -1,104 +1,156 @@
 <!DOCTYPE html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gestion-Data</title>
 <style>
-:root{--bg:#eef2f1;--card:#fff;--ink:#14232b;--mute:#5d6f76;--line:#d3dcdb;--acc:#0f6b4f;--err:#b3261e}
-@media (prefers-color-scheme:dark){:root{--bg:#10191d;--card:#18252a;--ink:#e8f0ee;--mute:#9bb0b0;--line:#2b3c41;--acc:#3fbf93;--err:#ff8a80}}
+:root{--bg:#f3f6f2;--card:#fff;--ink:#0f2219;--mute:#5d7066;--line:#e0e7e1;--acc:#0e6b4d;--onacc:#fff;--soft:#e7f3ed;--gold:#e2a336;--side:#0a3126;--sideink:#cfe3d9;--err:#b3261e;--warnbg:#fdf0d2;--warn:#7a4f00;--sh:0 1px 2px rgba(10,40,30,.06),0 6px 20px rgba(10,40,30,.06)}
+@media(prefers-color-scheme:dark){:root{--bg:#0b1612;--card:#122219;--ink:#e8f1ec;--mute:#93a99f;--line:#223a2f;--acc:#3ec895;--onacc:#05241a;--soft:#17332a;--side:#07201a;--sideink:#bcd6cb;--err:#ff8a80;--warnbg:#3a2c0e;--warn:#f0c46a;--sh:0 1px 2px rgba(0,0,0,.3)}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.wrap{max-width:640px;margin:0 auto;padding:16px}
-h1{font-size:1.5rem;margin:8px 0 4px}h2{font-size:1.2rem;margin:0 0 8px}
-.sub{color:var(--mute);margin:0 0 16px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
-label{display:block;font-size:.9rem;color:var(--mute);margin:10px 0 4px}
-input,textarea{width:100%;padding:11px;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px}
-textarea{min-height:160px}
-:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
-button{font:inherit;cursor:pointer;border-radius:8px;border:0;padding:12px 16px}
-.main{background:var(--acc);color:#fff;width:100%;margin-top:16px;font-weight:600}
-.link{background:none;color:var(--acc);padding:8px 0;text-decoration:underline}
-.msg{margin-top:12px;min-height:1.2em;color:var(--mute)}.msg.err{color:var(--err)}
-.hide{display:none}
-.types{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.types button{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
-.types button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
-#bar{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line)}
-#bar button{background:none;color:var(--ink);border:1px solid var(--line)}
-#nav{display:none;background:var(--card);border-bottom:1px solid var(--line);padding:8px}
-#nav.open{display:block}
-#nav button{display:block;width:100%;text-align:left;background:none;color:var(--ink);padding:10px 12px}
-#nav button.on{background:var(--bg);font-weight:600}
-#nav button:disabled{color:var(--mute);cursor:default}
-#nav small{color:var(--mute)}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.stat{background:var(--bg);border-radius:8px;padding:12px;text-align:center}
-.stat b{display:block;font-size:1.6rem}
-.row{border-top:1px solid var(--line);padding:10px 0;display:flex;justify-content:space-between;gap:12px}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1,h2{margin:0;letter-spacing:-.02em;line-height:1.2}h1{font-size:1.7rem}h2{font-size:1.15rem}p{margin:0}
+.hide{display:none!important}
+.ic{display:inline-flex;width:20px;height:20px;flex:none}.ic svg{width:100%;height:100%}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;transition:transform .15s,background .15s,box-shadow .15s}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.btn{background:var(--acc);color:var(--onacc);font-weight:600;padding:13px 18px;width:100%;margin-top:18px}
+.btn:hover{transform:translateY(-1px);box-shadow:var(--sh)}
+.link{background:none;color:var(--acc);padding:10px 0;text-decoration:underline;width:100%}
+label{display:block;font-size:.85rem;font-weight:600;margin:14px 0 6px}
+input,textarea{width:100%;padding:12px 14px;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px}
+input:focus,textarea:focus{border-color:var(--acc)}
+textarea{min-height:180px;resize:vertical}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--sh)}
+.sub{color:var(--mute)}
+.msg{min-height:1.3em;margin-top:12px;color:var(--mute);font-size:.92rem}.msg.err{color:var(--err)}
+#auth{display:grid;min-height:100vh}
+.hero{background:radial-gradient(600px 300px at 90% 0,rgba(226,163,54,.28),transparent 60%),linear-gradient(160deg,#0a3126,#0e5a42);color:#fff;padding:32px 24px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700}
+.logo{width:34px;height:34px;border-radius:10px;background:var(--gold);color:#2b1c00;display:grid;place-items:center;font-weight:800}
+.beta{font-size:.7rem;padding:2px 8px;border-radius:99px;background:rgba(255,255,255,.16);font-weight:600}
+.hero h1{margin:28px 0 12px;font-size:2rem}
+.hero p{color:#cfe3d9;max-width:32rem}
+.hero ul{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:10px}
+.hero li{display:flex;gap:10px;align-items:center}.hero li .ic{color:var(--gold)}
+.panel{display:grid;place-items:center;padding:24px}.panel .card{width:100%;max-width:420px}
+@media(min-width:900px){#auth{grid-template-columns:1.1fr 1fr}.hero{padding:56px;display:flex;flex-direction:column;justify-content:center}.hero h1{font-size:2.6rem}}
+#onb{min-height:100vh;display:grid;place-items:center;padding:24px}#onb .card{max-width:520px;width:100%}
+.types{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.type{display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-align:left;background:var(--card);color:var(--ink);border:1.5px solid var(--line);padding:14px}
+.type:hover{border-color:var(--acc)}.type.on{border-color:var(--acc);background:var(--soft)}
+.type .ic{color:var(--acc);width:24px;height:24px}
+#app{display:flex;min-height:100vh}
+#side{position:fixed;inset:0 auto 0 0;width:270px;background:var(--side);color:var(--sideink);display:flex;flex-direction:column;padding:18px 14px;transform:translateX(-100%);transition:transform .25s;z-index:30}
+body.nav-open #side{transform:none}
+#scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:20}body.nav-open #scrim{display:block}
+#side .brand{color:#fff;padding:4px 8px 18px}
+#nav{flex:1;overflow:auto;display:flex;flex-direction:column;gap:2px}
+.nv{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:none;color:var(--sideink);padding:11px 12px}
+.nv:hover:not(:disabled){background:rgba(255,255,255,.08)}.nv.on{background:rgba(255,255,255,.14);color:#fff;font-weight:600}
+.nv:disabled{opacity:.5;cursor:default}
+.nv small{margin-left:auto;font-size:.66rem;border:1px solid rgba(255,255,255,.3);padding:1px 7px;border-radius:99px}
+.who{border-top:1px solid rgba(255,255,255,.12);padding-top:12px;font-size:.8rem;word-break:break-all}
+.who .nv{padding:10px 4px;margin-top:4px}
+#main{flex:1;min-width:0}
+#top{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+#bg{background:var(--soft);color:var(--acc);padding:9px}
+#content{max-width:880px;margin:0 auto;padding:22px 16px 48px}
+@media(min-width:900px){#side{transform:none}#scrim{display:none!important}#main{margin-left:270px}#top{display:none}#content{padding:36px 32px}}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0}
+.stat{padding:16px}.stat .ic{color:var(--acc);margin-bottom:8px}.stat b{display:block;font-size:1.9rem;line-height:1}.stat .l{color:var(--mute);font-size:.8rem}
+.sec{margin:28px 0 12px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.tile{display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--card);color:var(--ink);border:1px solid var(--line);padding:16px;box-shadow:var(--sh)}
+.tile:hover:not(:disabled){transform:translateY(-2px);border-color:var(--acc)}.tile:disabled{opacity:.6;cursor:default}
+.ib{width:42px;height:42px;border-radius:12px;background:var(--soft);color:var(--acc);display:grid;place-items:center;flex:none}
+.tile small{color:var(--mute)}
+.tag{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--soft);color:var(--acc);align-self:flex-start}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
 .row:first-child{border-top:0}.row small{display:block;color:var(--mute)}
-.del{background:none;color:var(--err);padding:4px 8px}
-@media(min-width:800px){
-#bar button.burger{display:none}
-#app:not(.hide){display:flex;min-height:100vh}
-#side{width:260px;border-right:1px solid var(--line)}
-#nav{display:block;border:0}
-#content{flex:1}}
+.pill{font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.p-en_attente{background:var(--warnbg);color:var(--warn)}.p-en_cours{background:var(--soft);color:var(--acc)}.p-termine{background:var(--acc);color:var(--onacc)}
+.del{background:none;color:var(--err);padding:6px 8px;font-size:.85rem}
+.head{display:flex;gap:14px;align-items:center}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}
+.step{background:var(--soft);border-radius:12px;padding:10px 12px;font-size:.82rem}.step b{display:block;color:var(--acc)}
+.note{background:var(--warnbg);color:var(--warn);border-radius:12px;padding:12px 14px;font-size:.9rem;margin:16px 0}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style></head>
 <body>
 
-<section id="auth" class="wrap">
-<h1>Gestion-Data</h1>
-<p class="sub">Confiez vos données et documents à l'IA.</p>
-<div class="card">
-<label for="em">Adresse e-mail</label>
-<input id="em" type="email" autocomplete="email">
-<label for="pw">Mot de passe (8 caractères minimum)</label>
-<input id="pw" type="password" autocomplete="current-password">
-<button class="main" id="go">Se connecter</button>
+<section id="auth">
+<div class="hero">
+<div class="brand"><span class="logo">G</span>Gestion-Data<span class="beta">Bêta</span></div>
+<h1>Vos données et documents, traités par l’IA.</h1>
+<p>Un espace pour confier vos données et documents à l’IA : saisie, nettoyage, conversion et mise en forme.</p>
+<ul id="pts"></ul>
+</div>
+<div class="panel"><div class="card">
+<h2 id="at">Connexion</h2><p class="sub">Accédez à votre espace.</p>
+<label for="em">Adresse e-mail</label><input id="em" type="email" autocomplete="email">
+<label for="pw">Mot de passe (8 caractères minimum)</label><input id="pw" type="password" autocomplete="current-password">
+<button class="btn" id="go">Se connecter</button>
 <button class="link" id="sw" type="button">Pas de compte ? Créer un compte</button>
 <div class="msg" id="am" role="status"></div>
-</div>
+</div></div>
 </section>
 
-<section id="onb" class="wrap hide">
-<h1>Parlez-nous de vous</h1>
-<p class="sub">Cela nous aide à adapter la plateforme.</p>
-<div class="card">
-<label>Vous travaillez...</label>
-<div class="types" id="types"></div>
-<label for="na">Nom de votre activité (facultatif)</label>
-<input id="na">
-<button class="main" id="ok">Continuer</button>
-<div class="msg" id="om" role="status"></div>
-</div>
-</section>
+<section id="onb" class="hide"><div class="card">
+<h1>Parlez-nous de vous</h1><p class="sub">Cela nous aide à adapter la plateforme à votre activité.</p>
+<label>Vous travaillez…</label><div class="types" id="types"></div>
+<label for="na">Nom de votre activité (facultatif)</label><input id="na">
+<button class="btn" id="ok">Continuer</button><div class="msg" id="om" role="status"></div>
+</div></section>
 
-<section id="app" class="hide">
-<div id="side">
-<div id="bar"><strong>Gestion-Data</strong><button class="burger" id="bg" type="button">Menu</button></div>
-<nav id="nav"></nav>
+<div id="app" class="hide">
+<div id="scrim"></div>
+<aside id="side"><div class="brand"><span class="logo">G</span>Gestion-Data</div><nav id="nav"></nav><div class="who"><div id="mail"></div><div id="lo"></div></div></aside>
+<div id="main"><header id="top"><button id="bg" aria-label="Menu"></button><div class="brand"><span class="logo">G</span>Gestion-Data</div></header><main id="content"></main></div>
 </div>
-<main id="content" class="wrap"></main>
-</section>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
 const sb=supabase.createClient("https://fsedqwxplgrtvtvndoxw.supabase.co","sb_publishable_s7u3Ts6pdfn_M_X5tvZdqw_E9GO8XmM");
 const $=id=>document.getElementById(id);
+const P={
+dash:'<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
+saisie:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/>',
+nettoyage:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16v4M17 18h4"/>',
+pdf:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>',
+forme:'<path d="M5 6h14M5 12h14M5 18h9"/>',
+recherche:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+fichiers:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+bases:'<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>',
+out:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
+menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',
+clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+check:'<path d="M5 12l5 5 9-10"/>',
+seul:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
+equipe:'<circle cx="9" cy="8" r="3.5"/><circle cx="17" cy="9" r="2.5"/><path d="M2 20c0-3.5 3-5.5 7-5.5s7 2 7 5.5M16 14.5c3 0 6 1.3 6 4.5"/>',
+entreprise:'<path d="M4 21V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v16M14 9h5a1 1 0 0 1 1 1v11M8 8h2M8 12h2M8 16h2M3 21h18"/>',
+boutique:'<path d="M4 9l1-5h14l1 5M4 9v11h16V9M4 9a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0A2.7 2.7 0 0 0 20 9M10 20v-5h4v5"/>'};
+function ic(n){const s=document.createElement("span");s.className="ic";s.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+P[n]+'</svg>';return s}
+// [id, nom, courte, longue, icône, actif]
 const S=[
-["saisie","Saisie de données","Collez vos notes, listes ou textes : ils seront transformés en tableau propre.",1],
-["nettoyage","Nettoyage de données","Collez votre tableau : doublons, formats et erreurs seront corrigés.",1],
-["pdf","Conversion PDF","Collez le texte de votre PDF : il sera converti en tableau organisé.",1],
-["mise_en_forme","Mise en forme de documents","Collez votre texte : il sera mis en forme (titres, sommaire, présentation).",1],
-["recherche","Recherche web","",0],["fichiers","Organisation de fichiers","",0],["bases","Gestion de bases de données","",0]];
-const TYPES=["Seul(e)","En équipe","Entreprise","Boutique"];
+["saisie","Saisie de données","Transformez vos notes et listes en tableau propre.","Collez vos notes, listes ou textes : ils seront organisés en tableau.","saisie",1],
+["nettoyage","Nettoyage de données","Doublons, formats et erreurs corrigés.","Collez votre tableau : doublons, formats et erreurs seront corrigés.","nettoyage",1],
+["pdf","Conversion PDF","Du PDF vers un tableau organisé.","Collez le texte de votre PDF : il sera converti en tableau organisé.","pdf",1],
+["mise_en_forme","Mise en forme de documents","Un texte brut devient un document propre.","Collez votre texte : il sera mis en forme (titres, sommaire, présentation).","forme",1],
+["recherche","Recherche web","Fournisseurs, prix et prospects.","","recherche",0],
+["fichiers","Organisation de fichiers","Un plan de classement clair.","","fichiers",0],
+["bases","Gestion de bases de données","Vos fichiers clients et produits à jour.","","bases",0]];
+const TYPES=[["Seul(e)","seul"],["En équipe","equipe"],["Entreprise","entreprise"],["Boutique","boutique"]];
 const ST={en_attente:"En attente",en_cours:"En cours",termine:"Terminée"};
-let type="",view="dash",signup=false;
-
-function el(tag,props,text){const e=document.createElement(tag);Object.assign(e,props||{});if(text!=null)e.textContent=text;return e}
+let type="",view="dash",signup=false,prof=null,mail="";
+function el(t,p,x){const e=document.createElement(t);Object.assign(e,p||{});if(x!=null)e.textContent=x;return e}
 function say(id,t,err){const m=$(id);m.textContent=t;m.className="msg"+(err?" err":"")}
 function show(id){["auth","onb","app"].forEach(k=>$(k).classList.toggle("hide",k!==id))}
 
-// Connexion
+["Quatre services prêts à tester","Pensé pour les petites entreprises et boutiques","Vos données restent privées"].forEach(t=>{const l=el("li");l.append(ic("check"),t);$("pts").append(l)});
+$("bg").append(ic("menu"));
+$("bg").onclick=()=>document.body.classList.toggle("nav-open");
+$("scrim").onclick=()=>document.body.classList.remove("nav-open");
+
 $("sw").onclick=()=>{signup=!signup;
+$("at").textContent=signup?"Créer un compte":"Connexion";
 $("go").textContent=signup?"Créer mon compte":"Se connecter";
 $("sw").textContent=signup?"Déjà un compte ? Se connecter":"Pas de compte ? Créer un compte";say("am","")};
 $("go").onclick=async()=>{
@@ -110,9 +162,8 @@ if(r.error)return say("am",r.error.message,1);
 if(signup&&!r.data.session)return say("am","Compte créé. Confirmez votre e-mail, puis connectez-vous.");
 say("am","");start()};
 
-// Profil
 const tb=$("types");
-TYPES.forEach(t=>{const b=el("button",{type:"button"},t);
+TYPES.forEach(([t,i])=>{const b=el("button",{type:"button",className:"type"});b.append(ic(i),t);
 b.onclick=()=>{type=t;[...tb.children].forEach(c=>c.classList.toggle("on",c===b))};tb.append(b)});
 $("ok").onclick=async()=>{
 if(!type)return say("om","Choisissez une option.",1);
@@ -123,59 +174,70 @@ start()};
 async function start(){
 const {data:{session}}=await sb.auth.getSession();
 if(!session)return show("auth");
+mail=session.user.email||"";$("mail").textContent=mail;
 const {data:p}=await sb.from("profils").select("*").maybeSingle();
 if(!p)return show("onb");
-show("app");go("dash")}
+prof=p;show("app");go("dash")}
 
-// Menu
-$("bg").onclick=()=>$("nav").classList.toggle("open");
 function nav(){const n=$("nav");n.replaceChildren();
-const add=(k,t,dis)=>{const b=el("button",{type:"button",className:k===view?"on":"",disabled:!!dis},t);
-if(dis)b.append(el("br"),el("small",{},"Bientôt disponible"));
-b.onclick=()=>{go(k);n.classList.remove("open")};n.append(b)};
-add("dash","Tableau de bord");
-S.forEach(s=>add(s[0],s[1],!s[3]));
-const o=el("button",{type:"button"},"Se déconnecter");
-o.onclick=async()=>{await sb.auth.signOut();show("auth")};n.append(o)}
+const add=(k,t,i,dis)=>{const b=el("button",{type:"button",className:"nv"+(k===view?" on":""),disabled:!!dis});
+b.append(ic(i),t);if(dis)b.append(el("small",{},"Bientôt"));
+b.onclick=()=>go(k);n.append(b)};
+add("dash","Tableau de bord","dash");
+S.forEach(s=>add(s[0],s[1],s[4],!s[5]));
+const lo=$("lo");lo.replaceChildren();
+const o=el("button",{type:"button",className:"nv"});o.append(ic("out"),"Se déconnecter");
+o.onclick=async()=>{await sb.auth.signOut();prof=null;document.body.classList.remove("nav-open");show("auth")};lo.append(o)}
 
-function go(k){view=k;nav();const c=$("content");c.replaceChildren();
+function go(k){view=k;document.body.classList.remove("nav-open");nav();window.scrollTo(0,0);
+const c=$("content");c.replaceChildren();
 if(k==="dash")return dash(c);
 svc(c,S.find(x=>x[0]===k))}
 
-// Tableau de bord
 async function dash(c){
-c.append(el("h1",{},"Tableau de bord"),el("p",{className:"sub"},"Suivez vos demandes."));
+c.append(el("h1",{},"Bonjour, "+(prof.nom_activite||mail.split("@")[0])),el("p",{className:"sub"},"Voici l’activité de votre espace."));
 const {data,error}=await sb.from("demandes").select("id,service,titre,statut,cree_le").order("cree_le",{ascending:false}).limit(200);
 if(error)return c.append(el("p",{className:"msg err"},error.message));
 const n=s=>data.filter(d=>d.statut===s).length;
-const card=el("div",{className:"card"}),st=el("div",{className:"stats"});
-[["Demandes",data.length],["En attente",n("en_attente")],["Terminées",n("termine")]].forEach(([l,v])=>{
-const d=el("div",{className:"stat"});d.append(el("b",{},v),l);st.append(d)});
-card.append(st);c.append(card);
-const L=el("div",{className:"card"});L.append(el("h2",{},"Vos dernières demandes"));
-if(!data.length)L.append(el("p",{className:"sub"},"Aucune demande pour l'instant. Choisissez un service dans le menu."));
+const st=el("div",{className:"stats"});
+[["Demandes","dash",data.length],["En attente","clock",n("en_attente")],["Terminées","check",n("termine")]].forEach(([l,i,v])=>{
+const d=el("div",{className:"card stat"});d.append(ic(i),el("b",{},v),el("span",{className:"l"},l));st.append(d)});
+c.append(st,el("h2",{className:"sec"},"Lancer un service"));
+const tl=el("div",{className:"tiles"});
+S.forEach(s=>{const b=el("button",{type:"button",className:"tile",disabled:!s[5]});
+const ib=el("div",{className:"ib"});ib.append(ic(s[4]));
+b.append(ib,el("strong",{},s[1]),el("small",{},s[2]));
+if(!s[5])b.append(el("span",{className:"tag"},"Bientôt disponible"));
+b.onclick=()=>go(s[0]);tl.append(b)});
+c.append(tl,el("h2",{className:"sec"},"Vos dernières demandes"));
+const L=el("div",{className:"card"});
+if(!data.length)L.append(el("p",{className:"sub"},"Aucune demande pour l’instant. Choisissez un service ci-dessus."));
 data.slice(0,20).forEach(d=>{
 const nom=(S.find(x=>x[0]===d.service)||[])[1]||d.service;
 const r=el("div",{className:"row"}),i=el("div");
-i.append(el("strong",{},nom),el("small",{},[d.titre,ST[d.statut]||d.statut,new Date(d.cree_le).toLocaleDateString("fr-FR")].filter(Boolean).join(" · ")));
+i.append(el("strong",{},nom),el("small",{},[d.titre,new Date(d.cree_le).toLocaleDateString("fr-FR")].filter(Boolean).join(" · ")));
+const rt=el("div");rt.style.cssText="display:flex;align-items:center;gap:8px";
+rt.append(el("span",{className:"pill p-"+d.statut},ST[d.statut]||d.statut));
 const x=el("button",{className:"del",type:"button"},"Supprimer");
 x.onclick=async()=>{if(!confirm("Supprimer cette demande ?"))return;await sb.from("demandes").delete().eq("id",d.id);go("dash")};
-r.append(i,x);L.append(r)});
+rt.append(x);r.append(i,rt);L.append(r)});
 c.append(L)}
 
-// Services
 function svc(c,s){
-c.append(el("h1",{},s[1]),el("p",{className:"sub"},s[2]));
+const h=el("div",{className:"head"}),ib=el("div",{className:"ib"});ib.append(ic(s[4]));
+const tx=el("div");tx.append(el("h1",{},s[1]),el("p",{className:"sub"},s[3]));h.append(ib,tx);
+const stp=el("div",{className:"steps"});
+[["1. Déposez","Collez vos données"],["2. Traitement","L’IA les organise"],["3. Résultat","Retrouvé dans votre espace"]].forEach(([a,b])=>{const d=el("div",{className:"step"});d.append(el("b",{},a),b);stp.append(d)});
+c.append(h,el("div",{className:"note"},"Le traitement automatique par l’IA arrive bientôt. Pour l’instant, votre demande est enregistrée et reste « En attente »."),stp);
 const card=el("div",{className:"card"}),f=el("form");
 f.append(el("label",{htmlFor:"t"},"Titre (facultatif)"),el("input",{id:"t"}),
 el("label",{htmlFor:"ct"},"Vos données ou votre texte"),el("textarea",{id:"ct",required:true}),
-el("button",{className:"main",type:"submit"},"Envoyer la demande"));
-const m=el("div",{className:"msg",id:"sm",role:"status"});
+el("button",{className:"btn",type:"submit"},"Envoyer la demande"));
 f.onsubmit=async e=>{e.preventDefault();
 const {error}=await sb.from("demandes").insert({service:s[0],titre:$("t").value.trim()||null,contenu:$("ct").value});
 if(error)return say("sm",error.message,1);
-f.reset();say("sm","Demande enregistrée. Le traitement automatique par l'IA arrive bientôt : en attendant, elle reste « En attente ».")};
-card.append(f,m);c.append(card)}
+f.reset();say("sm","Demande enregistrée. Retrouvez-la dans le tableau de bord.")};
+card.append(f,el("div",{className:"msg",id:"sm",role:"status"}));c.append(card)}
 
 start();
 </script>
